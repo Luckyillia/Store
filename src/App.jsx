@@ -2,6 +2,8 @@ import './App.css'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+const ITEMS_PER_CARD = 24 // 4 rows × 6 cols
+
 function getIconPath(item) {
   const badgeImage = item?.badgeImage
   if (badgeImage && typeof badgeImage === 'string') {
@@ -55,6 +57,8 @@ const STORAGE_KEY = 'ph_sale_state_v1'
 
 function App() {
   const [catalogQuery, setCatalogQuery] = useState('')
+  const [catalogOpen, setCatalogOpen] = useState(true)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [hiddenTypes, setHiddenTypes] = useState({
     food: true,
     drinks: true,
@@ -261,9 +265,20 @@ function App() {
     })
   }
 
+  // Split saleItems into chunks of ITEMS_PER_CARD for multi-card preview
+  const previewCards = useMemo(() => {
+    const cards = []
+    for (let i = 0; i < saleItems.length; i += ITEMS_PER_CARD) {
+      cards.push(saleItems.slice(i, i + ITEMS_PER_CARD))
+    }
+    return cards
+  }, [saleItems])
+
+  const totalCards = previewCards.length
+
   return (
-    <div className="app">
-      <div className="sidebar">
+    <div className={`app${catalogOpen ? '' : ' app--catalogHidden'}`}>
+      <div className={`sidebar${catalogOpen ? '' : ' sidebar--hidden'}`}>
         <div className="sidebarHeader">
           <div className="logo">
             <div className="logoIcon">PH</div>
@@ -287,7 +302,20 @@ function App() {
             >
               Каталог
             </div>
-            <div className="catalogCount">Показано: {catalogItems.length}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="catalogCount">Показано: {catalogItems.length}</div>
+              <button
+                type="button"
+                className={`filterBurger${filtersOpen ? ' filterBurger--open' : ''}`}
+                onClick={() => setFiltersOpen((v) => !v)}
+                title="Фильтры"
+                aria-label="Переключить фильтры"
+              >
+                <span />
+                <span />
+                <span />
+              </button>
+            </div>
           </div>
 
           <input
@@ -299,55 +327,57 @@ function App() {
             autoComplete="off"
           />
 
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.food}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, food: !e.target.checked }))}
-              />
-              Еда
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.drinks}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, drinks: !e.target.checked }))}
-              />
-              Напитки
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.medicine}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, medicine: !e.target.checked }))}
-              />
-              Лекарства
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.weapons}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, weapons: !e.target.checked }))}
-              />
-              Оружие
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.ammo}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, ammo: !e.target.checked }))}
-              />
-              Патроны
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 12 }}>
-              <input
-                type="checkbox"
-                checked={!hiddenTypes.junk}
-                onChange={(e) => setHiddenTypes((p) => ({ ...p, junk: !e.target.checked }))}
-              />
-              Ресурсы/мусор
-            </label>
+          <div className={`filterPanel${filtersOpen ? ' filterPanel--open' : ''}`}>
+            <div className="filterGrid">
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.food}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, food: !e.target.checked }))}
+                />
+                Еда
+              </label>
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.drinks}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, drinks: !e.target.checked }))}
+                />
+                Напитки
+              </label>
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.medicine}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, medicine: !e.target.checked }))}
+                />
+                Лекарства
+              </label>
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.weapons}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, weapons: !e.target.checked }))}
+                />
+                Оружие
+              </label>
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.ammo}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, ammo: !e.target.checked }))}
+                />
+                Патроны
+              </label>
+              <label className="filterLabel">
+                <input
+                  type="checkbox"
+                  checked={!hiddenTypes.junk}
+                  onChange={(e) => setHiddenTypes((p) => ({ ...p, junk: !e.target.checked }))}
+                />
+                Ресурсы/мусор
+              </label>
+            </div>
           </div>
         </div>
 
@@ -375,14 +405,24 @@ function App() {
 
       <div className="sidebarSecondary">
         <div className="saleListHeader">
-          <h2>
-            Добавлено{' '}
-            {saleItems.length ? (
-              <span style={{ color: 'var(--accent)', fontSize: 12 }}>
-                ({saleItems.length})
-              </span>
-            ) : null}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              type="button"
+              className={`catalogToggleBtn${catalogOpen ? ' catalogToggleBtn--open' : ''}`}
+              onClick={() => setCatalogOpen((v) => !v)}
+              title={catalogOpen ? 'Скрыть каталог' : 'Показать каталог'}
+            >
+              {catalogOpen ? '◀' : '▶'}
+            </button>
+            <h2>
+              Добавлено{' '}
+              {saleItems.length ? (
+                <span style={{ color: 'var(--accent)', fontSize: 12 }}>
+                  ({saleItems.length})
+                </span>
+              ) : null}
+            </h2>
+          </div>
           <button type="button" className="btnClear" onClick={clearAll}>
             Очистить
           </button>
@@ -455,7 +495,14 @@ function App() {
 
       <div className="main">
         <div className="mainHeader">
-          <h2>Предпросмотр (сеткой)</h2>
+          <h2>
+            Предпросмотр (сеткой)
+            {totalCards > 1 && (
+              <span style={{ color: 'var(--text2)', fontSize: 11, fontFamily: 'Manrope, sans-serif', fontWeight: 400, marginLeft: 10 }}>
+                — {totalCards} объявлен{totalCards === 2 ? 'ия' : totalCards <= 4 ? 'ия' : 'ий'}
+              </span>
+            )}
+          </h2>
         </div>
 
         <div className="previewArea">
@@ -464,52 +511,63 @@ function App() {
               Добавь предметы — справа появится карточка для скрина
             </div>
           ) : (
-            <div className="boardCard">
-              <div className="boardTitleRow">
-                <div className="boardTitle">🏪 ПРОДАЮ</div>
-                {seller ? <div className="boardSellerTag">✉ {seller}</div> : null}
-              </div>
+            previewCards.map((cardItems, cardIdx) => (
+              <div key={cardIdx} className="boardCard">
+                {totalCards > 1 && (
+                  <div className="boardCardBadge">
+                    {cardIdx + 1} / {totalCards}
+                  </div>
+                )}
+                <div className="boardTitleRow">
+                  <div className="boardTitle">🏪 ПРОДАЮ</div>
+                  {seller ? <div className="boardSellerTag">✉ {seller}</div> : null}
+                </div>
 
-              <div className="boardSubtitle">{saleItems.length} позиций · MTA Province</div>
-              <div className="boardDivider" />
+                <div className="boardSubtitle">
+                  {cardItems.length} позиц{cardItems.length === 1 ? 'ия' : cardItems.length <= 4 ? 'ии' : 'ий'}
+                  {totalCards > 1 ? ` · часть ${cardIdx + 1} из ${totalCards}` : ''}
+                  {' '}· MTA Province
+                </div>
+                <div className="boardDivider" />
 
-              <div className="boardItems">
-                {saleItems.map((s, idx) => {
-                  const price = String(s.price || '').trim()
-                  return (
-                    <div className="boardItemCard" key={`${s.key}-card`}>
-                      <div className="boardItemTop">
-                        <div className="boardItemIcon">
-                          <img
-                            src={getIconPath(s.item) || ''}
-                            alt=""
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none'
-                            }}
-                          />
+                <div className="boardItems">
+                  {cardItems.map((s) => {
+                    const price = String(s.price || '').trim()
+                    return (
+                      <div className="boardItemCard" key={`${s.key}-card-${cardIdx}`}>
+                        <div className="boardItemTop">
+                          <div className="boardItemIcon">
+                            <img
+                              src={getIconPath(s.item) || ''}
+                              alt=""
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>
+                            {s.qty > 1 ? `x${s.qty}` : ''}
+                          </div>
                         </div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>
-                          {s.qty > 1 ? `x${s.qty}` : ''}
+                        <div className="boardItemBottom">
+                          <div className="boardItemName2">{s.item.name}</div>
+                          {price ? (
+                            <div className="boardItemPrice2">{price}</div>
+                          ) : (
+                            <div className="boardItemPrice2 boardItemPrice2No">договор</div>
+                          )}
                         </div>
                       </div>
-                      <div className="boardItemBottom">
-                        <div className="boardItemName2">{s.item.name}</div>
-                        {price ? (
-                          <div className="boardItemPrice2">{price}</div>
-                        ) : (
-                          <div className="boardItemPrice2 boardItemPrice2No">договор</div>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
 
-              <div className="boardFooter">
-                <div className="boardWatermark">PROVHUB · MTA PROVINCE</div>
-                <div className="boardStats">{formatDateRu(new Date())}</div>
+                <div className="boardFooter">
+                  <div className="boardWatermark">PROVHUB · MTA PROVINCE</div>
+                  <div className="boardStats">{formatDateRu(new Date())}</div>
+                </div>
               </div>
-            </div>
+            ))
           )}
         </div>
       </div>

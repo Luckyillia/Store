@@ -3,6 +3,11 @@
   grid-template-columns: 420px 360px 1fr;
   min-height: 100vh;
   height: 100vh;
+  transition: grid-template-columns 0.25s ease;
+}
+
+.app--catalogHidden {
+  grid-template-columns: 0px 360px 1fr;
 }
 
 .sidebar {
@@ -12,6 +17,14 @@
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
+  transition: width 0.25s ease, opacity 0.2s ease;
+}
+
+.sidebar--hidden {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  width: 0;
 }
 
 .sidebarSecondary {
@@ -85,6 +98,7 @@
   font-size: 13px;
   outline: none;
   transition: border-color 0.15s;
+  box-sizing: border-box;
 }
 
 .searchInput:focus {
@@ -95,15 +109,95 @@
   color: var(--text3);
 }
 
-.searchResults {
-  max-height: 340px;
-  overflow-y: auto;
-  margin-top: 6px;
-  border-radius: var(--radius-sm);
+/* ── Filter burger button ── */
+.filterBurger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 28px;
+  height: 28px;
   background: var(--surface2);
   border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
 }
 
+.filterBurger:hover {
+  border-color: var(--accent);
+  background: var(--surface3);
+}
+
+.filterBurger--open {
+  border-color: var(--accent);
+  background: rgba(124, 106, 255, 0.12);
+}
+
+.filterBurger span {
+  display: block;
+  width: 14px;
+  height: 1.5px;
+  background: var(--text2);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s, width 0.2s;
+  transform-origin: center;
+}
+
+.filterBurger--open span:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+  background: var(--accent);
+}
+
+.filterBurger--open span:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+
+.filterBurger--open span:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+  background: var(--accent);
+}
+
+/* ── Collapsible filter panel ── */
+.filterPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+  overflow: hidden;
+}
+
+.filterPanel--open {
+  grid-template-rows: 1fr;
+}
+
+.filterGrid {
+  min-height: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding-top: 10px;
+}
+
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filterLabel input[type='checkbox'] {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── Catalog grid ── */
 .catalogHeader {
   display: flex;
   align-items: center;
@@ -274,6 +368,33 @@
   margin: 0;
 }
 
+/* ── Catalog toggle button ── */
+.catalogToggleBtn {
+  width: 22px;
+  height: 22px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text3);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.catalogToggleBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124, 106, 255, 0.1);
+}
+
+.catalogToggleBtn--open {
+  color: var(--text2);
+}
+
 .btnClear {
   font-size: 11px;
   color: var(--red);
@@ -414,6 +535,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   outline: none;
+  box-sizing: border-box;
 }
 
 .sellerInput:focus {
@@ -471,6 +593,7 @@
   color: var(--text3);
 }
 
+/* ── Board card ── */
 .boardCard {
   background: #0d0d12;
   border-radius: 16px;
@@ -478,6 +601,22 @@
   width: 860px;
   min-width: 860px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.boardCardBadge {
+  position: absolute;
+  top: 14px;
+  right: 56px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.22);
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 3px 8px;
 }
 
 .boardTitleRow {
@@ -583,7 +722,6 @@
   font-family: 'Manrope', sans-serif;
   font-weight: 600;
 }
-
 
 .boardItemQty {
   font-size: 11px;
