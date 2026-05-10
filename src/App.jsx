@@ -265,11 +265,50 @@ function App() {
     })
   }
 
-  // Split saleItems into chunks of ITEMS_PER_CARD for multi-card preview
+  // Sort saleItems by category before splitting into cards
+  const CATEGORY_ORDER = [
+    'Спортивные колеса',
+    'Стандартные колеса',
+    'Внедорожные колеса',
+    'Японская классика',
+    'Американская классика',
+    'Классические колеса',
+    'Советская классика',
+    'Номерная рамка',
+    'Винил',
+    'Рюкзак',
+    'Головной убор',
+    'Очки',
+    'Маска',
+    'Аксессуар для спины',
+    'Аксессуар для руки',
+    'Лекарство',
+    'Расходный материал',
+    'Предмет в руки',
+    'Еда',
+    'Оружие',
+    'Фракционное оружие',
+    'Фракционные патроны',
+    'Парашют',
+  ]
+
+  function getCategoryOrder(item) {
+    const type = String(item?.item?.type || '')
+    const idx = CATEGORY_ORDER.indexOf(type)
+    return idx === -1 ? CATEGORY_ORDER.length : idx
+  }
+
   const previewCards = useMemo(() => {
+    const sorted = [...saleItems].sort((a, b) => {
+      const ao = getCategoryOrder(a)
+      const bo = getCategoryOrder(b)
+      if (ao !== bo) return ao - bo
+      // Within same category sort by name
+      return String(a.item?.name || '').localeCompare(String(b.item?.name || ''), 'ru')
+    })
     const cards = []
-    for (let i = 0; i < saleItems.length; i += ITEMS_PER_CARD) {
-      cards.push(saleItems.slice(i, i + ITEMS_PER_CARD))
+    for (let i = 0; i < sorted.length; i += ITEMS_PER_CARD) {
+      cards.push(sorted.slice(i, i + ITEMS_PER_CARD))
     }
     return cards
   }, [saleItems])
