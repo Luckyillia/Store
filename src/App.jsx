@@ -355,7 +355,7 @@ function App() {
       <div className={`sidebar${catalogOpen ? '' : ' sidebar--hidden'}`}>
         <div className="sidebarHeader">
           <div className="logo">
-            <div className="logoIcon">PH</div>
+            <div className="logoIcon">SA</div>
             <div className="logoText">
               <h1>Sokirovskiy Accessory</h1>
               <span>Доска продаж</span>
