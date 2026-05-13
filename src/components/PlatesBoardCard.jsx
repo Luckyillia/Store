@@ -1,6 +1,6 @@
 import React from 'react';
 import { LicensePlate } from './LicensePlate';
-import { formatDateRu, formatNumber } from '../utils/helpers';
+import { formatDateRu } from '../utils/helpers';
 
 const PLATES_PER_CARD = 12;
 
@@ -30,7 +30,7 @@ export function PlatesBoardCard({ plateItems, cardNumber, totalCards, seller }) 
         {plateItems.map((p) => (
           <div className="platesGridItem" key={p.key}>
             <div className="platesGridPlate">
-              <LicensePlate number={p.number} region={p.region} size="small" />
+              <LicensePlate number={p.number} region={p.region} size="medium" />
             </div>
             {p.price ? (
               <div className="platesGridPrice">{p.price}</div>

@@ -1,11 +1,11 @@
 import React from 'react';
 
 export function LicensePlate({ number = '', region = '77', size = 'normal' }) {
-  const isTiny  = size === 'tiny';
-  const isSmall = size === 'small';
-  const scale   = isTiny ? 0.48 : isSmall ? 0.68 : 1;
+  const isTiny   = size === 'tiny';
+  const isSmall  = size === 'small';
+  const isMedium = size === 'medium';
+  const scale    = isTiny ? 0.48 : isSmall ? 0.68 : isMedium ? 0.82 : 1;
 
-  // Clean and parse: letter + 3 digits + 2 letters  →  "Р 066 РС"
   const cleaned = number.replace(/\s+/g, '').toUpperCase();
   const match   = cleaned.match(/^([А-ЯA-Z])(\d{1,3})([А-ЯA-Z]{1,2})$/);
 
@@ -51,13 +51,15 @@ export function LicensePlate({ number = '', region = '77', size = 'normal' }) {
           display:        'flex',
           alignItems:     'center',
           justifyContent: 'center',
-          paddingLeft:    10,
-          paddingRight:   6,
+          paddingLeft:    8,
+          paddingRight:   4,
         }}>
           {match ? (
             <>
               <span style={letterStyle}>{displayLeft}</span>
+              <span style={gapStyle} />
               <span style={digitsStyle}>{displayMid}</span>
+              <span style={gapStyle} />
               <span style={letterStyle}>{displayRight}</span>
             </>
           ) : (
@@ -67,11 +69,11 @@ export function LicensePlate({ number = '', region = '77', size = 'normal' }) {
 
         {/* Vertical divider */}
         <div style={{
-          width:        2,
-          background:   '#444',
-          flexShrink:   0,
-          alignSelf:    'stretch',
-          margin:       '5px 0',
+          width:      2,
+          background: '#444',
+          flexShrink: 0,
+          alignSelf:  'stretch',
+          margin:     '5px 0',
         }} />
 
         {/* Region + RUS + flag */}
@@ -131,13 +133,14 @@ export function LicensePlate({ number = '', region = '77', size = 'normal' }) {
   );
 }
 
+// Буквы меньше цифр, зазор между группами минимальный
 const letterStyle = {
-  fontSize:      46,
+  fontSize:      36,
   fontWeight:    900,
   color:         '#111',
   lineHeight:    1,
   fontFamily:    '"Arial Black", "Arial Bold", Arial, sans-serif',
-  letterSpacing: -1,
+  letterSpacing: 0,
 };
 
 const digitsStyle = {
@@ -146,6 +149,12 @@ const digitsStyle = {
   color:         '#111',
   lineHeight:    1,
   fontFamily:    '"Arial Black", "Arial Bold", Arial, sans-serif',
-  letterSpacing: 3,
-  margin:        '0 2px',
+  letterSpacing: 2,
+};
+
+// Минимальный зазор между буквой и цифровым блоком
+const gapStyle = {
+  display:    'inline-block',
+  width:      3,
+  flexShrink: 0,
 };

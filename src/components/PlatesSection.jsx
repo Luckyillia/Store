@@ -5,6 +5,7 @@ export function PlatesSection({ onAddPlate }) {
   const [number, setNumber] = useState('');
   const [region, setRegion] = useState('77');
   const [price, setPrice] = useState('');
+  const [collapsed, setCollapsed] = useState(false);
   const inputRef = useRef(null);
 
   function handleAdd() {
@@ -27,59 +28,69 @@ export function PlatesSection({ onAddPlate }) {
       <div className="platesSectionTitle">
         <span className="platesSectionIcon">🚗</span>
         Добавить номер
-      </div>
-
-      {/* Live preview */}
-      <div className="platesPreviewWrap">
-        {hasNumber ? (
-          <div className="platesPreviewLive">
-            <LicensePlate number={number} region={region} size="normal" />
-          </div>
-        ) : (
-          <div className="platesPreviewEmpty">
-            Введи номер — увидишь превью
-          </div>
-        )}
-      </div>
-
-      {/* Inputs */}
-      <div className="platesInputRow">
-        <input
-          ref={inputRef}
-          className="platesInput platesInput--number"
-          value={number}
-          onChange={e => setNumber(e.target.value.toUpperCase())}
-          onKeyDown={handleKeyDown}
-          placeholder="А123БВ"
-          maxLength={9}
-          spellCheck={false}
-        />
-        <input
-          className="platesInput platesInput--region"
-          value={region}
-          onChange={e => setRegion(e.target.value.replace(/\D/g, '').slice(0, 3))}
-          onKeyDown={handleKeyDown}
-          placeholder="77"
-          maxLength={3}
-        />
-      </div>
-
-      <div className="platesInputRow">
-        <input
-          className="platesInput platesInput--price"
-          value={price}
-          onChange={e => setPrice(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Цена $"
-        />
         <button
           type="button"
-          className="platesAddBtn"
-          onClick={handleAdd}
-          disabled={!hasNumber || !price.trim()}
+          className="platesSectionToggle"
+          onClick={() => setCollapsed((v) => !v)}
+          title={collapsed ? 'Развернуть' : 'Свернуть'}
         >
-          + Добавить
+          {collapsed ? '▼' : '▲'}
         </button>
+      </div>
+
+      <div className={`platesSectionBody${collapsed ? ' platesSectionBody--hidden' : ''}`}>
+        <div className="platesSectionInner">
+          <div className="platesPreviewWrap">
+            {hasNumber ? (
+              <div className="platesPreviewLive">
+                <LicensePlate number={number} region={region} size="normal" />
+              </div>
+            ) : (
+              <div className="platesPreviewEmpty">
+                Введи номер — увидишь превью
+              </div>
+            )}
+          </div>
+
+          <div className="platesInputRow">
+            <input
+              ref={inputRef}
+              className="platesInput platesInput--number"
+              value={number}
+              onChange={(e) => setNumber(e.target.value.toUpperCase())}
+              onKeyDown={handleKeyDown}
+              placeholder="А123БВ"
+              maxLength={9}
+              spellCheck={false}
+            />
+            <input
+              className="platesInput platesInput--region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value.replace(/\D/g, '').slice(0, 3))}
+              onKeyDown={handleKeyDown}
+              placeholder="77"
+              maxLength={3}
+            />
+          </div>
+
+          <div className="platesInputRow">
+            <input
+              className="platesInput platesInput--price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Цена $"
+            />
+            <button
+              type="button"
+              className="platesAddBtn"
+              onClick={handleAdd}
+              disabled={!hasNumber || !price.trim()}
+            >
+              + Добавить
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -902,12 +902,18 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.25);
 }
+
+.headerCardsCount {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
 /* ══════════════════════════════════════════════
-   LICENSE PLATE CSS — добавь в конец App.css
+   LICENSE PLATE STYLES
    ══════════════════════════════════════════════ */
-
-/* LicensePlate component uses inline styles — no .lp-* classes needed */
-
 
 /* ── Plates section in sidebar ── */
 .platesSection {
@@ -933,16 +939,52 @@
   font-size: 13px;
 }
 
+.platesSectionToggle {
+  margin-left: auto;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text2);
+  font-size: 9px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.platesSectionToggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124, 106, 255, 0.1);
+}
+
+/* grid-trick collapse */
+.platesSectionBody {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.22s ease;
+  overflow: hidden;
+}
+
+.platesSectionBody--hidden {
+  grid-template-rows: 0fr;
+}
+
+.platesSectionInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .platesPreviewWrap {
   margin-bottom: 10px;
   min-height: 82px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.platesPreviewLive {
-  /* LicensePlate sets its own size via scale */
 }
 
 .platesPreviewEmpty {
@@ -1041,15 +1083,15 @@
 
 .plateRowPreview {
   flex-shrink: 0;
-  /* tiny scale 0.48: 340 * 0.48 = 163px wide, 76 * 0.48 = 37px tall */
+  /* tiny scale 0.48: 340 * 0.48 = 163px, 76 * 0.48 = 37px */
   width: 163px;
   height: 37px;
   overflow: hidden;
 }
 
-/* ── PlatesBoardCard grid ── */
+/* ── PlatesBoardCard ── */
 .boardCard--plates {
-  background: linear-gradient(135deg, rgba(0,40,100,0.12), rgba(0,20,60,0.06));
+  background: linear-gradient(135deg, rgba(0, 40, 100, 0.12), rgba(0, 20, 60, 0.06));
 }
 
 .platesGrid {
@@ -1065,10 +1107,10 @@
   gap: 6px;
 }
 
+/* medium scale 0.82: 340 * 0.82 = 279px, 76 * 0.82 = 63px */
 .platesGridPlate {
-  /* small scale 0.68: 340 * 0.68 = 231px wide, 76 * 0.68 = 52px tall */
-  width: 231px;
-  height: 52px;
+  width: 279px;
+  height: 63px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -1082,16 +1124,8 @@
 }
 
 .platesGridPrice--none {
-  color: rgba(255,255,255,0.25);
+  color: rgba(255, 255, 255, 0.25);
   font-family: 'Manrope', sans-serif;
   font-weight: 600;
   font-size: 12px;
-}
-
-.headerCardsCount {
-  font-size: 11px;
-  color: var(--text2);
-  font-family: 'Manrope', sans-serif;
-  font-weight: 500;
-  margin-left: 4px;
 }
