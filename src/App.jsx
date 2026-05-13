@@ -21,6 +21,8 @@ import { Catalog } from './components/Catalog';
 import { SaleList } from './components/SaleList';
 import { BoardCard } from './components/BoardCard';
 import { SummaryCard } from './components/SummaryCard';
+import { PlatesSection } from './components/PlatesSection';
+import { PlatesBoardCard, PLATES_PER_CARD } from './components/PlatesBoardCard';
 
 function App() {
   const [catalogQuery, setCatalogQuery] = useState('');
@@ -29,6 +31,7 @@ function App() {
   const [hiddenTypes, setHiddenTypes] = useState({ ...FILTER_DEFAULTS });
   const [seller, setSeller] = useState('');
   const [saleItems, setSaleItems] = useState([]);
+  const [plateItems, setPlateItems] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const inputRef = useRef(null);
 
@@ -64,6 +67,10 @@ function App() {
             });
           setSaleItems(migrated);
         }
+
+        if (Array.isArray(parsed?.plateItems)) {
+          setPlateItems(parsed.plateItems);
+        }
       }
     } catch (e) {
       console.error('LocalStorage load failed', e);
@@ -81,8 +88,9 @@ function App() {
       catalogQuery,
       hiddenTypes,
       saleItems,
+      plateItems,
     });
-  }, [seller, catalogQuery, hiddenTypes, saleItems, isLoaded]);
+  }, [seller, catalogQuery, hiddenTypes, saleItems, plateItems, isLoaded]);
 
   // Database Readiness Check
   useEffect(() => {
@@ -164,6 +172,28 @@ function App() {
     });
   }
 
+  // ── Plates ──
+  function addPlate({ number, region, price }) {
+    const key = `plate::${number}::${region}::${Date.now()}`;
+    setPlateItems((prev) => [...prev, { key, number, region, price }]);
+  }
+
+  function removePlate(key) {
+    setPlateItems((prev) => prev.filter((p) => p.key !== key));
+  }
+
+  function setPlatePrice(key, price) {
+    setPlateItems((prev) =>
+      prev.map((p) => p.key === key ? { ...p, price } : p)
+    );
+  }
+
+  function clearPlates() {
+    if (window.confirm('Очистить все номера?')) {
+      setPlateItems([]);
+    }
+  }
+
   function getCategoryOrder(item) {
     const type = String(item?.item?.type || '');
     const idx = CATEGORY_ORDER.indexOf(type);
@@ -198,7 +228,16 @@ function App() {
     return { itemCards: itemCardsArr, skinCards: skinCardsArr };
   }, [saleItems]);
 
-  const totalCards = itemCards.length + skinCards.length;
+  // Plate cards
+  const plateCards = useMemo(() => {
+    const cards = [];
+    for (let i = 0; i < plateItems.length; i += PLATES_PER_CARD) {
+      cards.push(plateItems.slice(i, i + PLATES_PER_CARD));
+    }
+    return cards;
+  }, [plateItems]);
+
+  const totalCards = itemCards.length + skinCards.length + plateCards.length;
 
   return (
     <div className={`app${catalogOpen ? '' : ' app--catalogHidden'}`}>
@@ -213,6 +252,9 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Plates section above catalog */}
+        <PlatesSection onAddPlate={addPlate} />
 
         <Catalog 
           items={catalogItems}
@@ -240,6 +282,10 @@ function App() {
           setSeller={setSeller}
           catalogOpen={catalogOpen}
           setCatalogOpen={setCatalogOpen}
+          plateItems={plateItems}
+          onRemovePlate={removePlate}
+          onSetPlatePrice={setPlatePrice}
+          onClearPlates={clearPlates}
         />
       </div>
 
@@ -257,7 +303,7 @@ function App() {
         </div>
 
         <div className="previewArea">
-          {!saleItems.length ? (
+          {!saleItems.length && !plateItems.length ? (
             <div className="noPreview">
               Добавь предметы — справа появится карточка для скрина
             </div>
@@ -284,7 +330,17 @@ function App() {
                 />
               ))}
 
-              <SummaryCard saleItems={saleItems} seller={seller} />
+              {plateCards.map((cardItems, idx) => (
+                <PlatesBoardCard
+                  key={`plate-card-${idx}`}
+                  plateItems={cardItems}
+                  cardNumber={itemCards.length + skinCards.length + idx + 1}
+                  totalCards={totalCards}
+                  seller={seller}
+                />
+              ))}
+
+              <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
             </>
           )}
         </div>

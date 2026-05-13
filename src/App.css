@@ -902,3 +902,196 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.25);
 }
+/* ══════════════════════════════════════════════
+   LICENSE PLATE CSS — добавь в конец App.css
+   ══════════════════════════════════════════════ */
+
+/* LicensePlate component uses inline styles — no .lp-* classes needed */
+
+
+/* ── Plates section in sidebar ── */
+.platesSection {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(124, 106, 255, 0.04);
+}
+
+.platesSectionTitle {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.platesSectionIcon {
+  font-size: 13px;
+}
+
+.platesPreviewWrap {
+  margin-bottom: 10px;
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platesPreviewLive {
+  /* LicensePlate sets its own size via scale */
+}
+
+.platesPreviewEmpty {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+}
+
+.platesInputRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.platesInput {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--text);
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.platesInput:focus {
+  border-color: var(--accent);
+}
+
+.platesInput::placeholder {
+  color: var(--text3);
+}
+
+.platesInput--number {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.platesInput--region {
+  width: 52px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.platesInput--price {
+  flex: 1;
+  font-size: 12px;
+}
+
+.platesAddBtn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.platesAddBtn:hover:not(:disabled) {
+  background: var(--accent2);
+}
+
+.platesAddBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Plate rows in sale list ── */
+.platesListDivider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 6px;
+  padding: 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Unbounded', sans-serif;
+}
+
+.saleRow--plate {
+  gap: 8px;
+}
+
+.plateRowPreview {
+  flex-shrink: 0;
+  /* tiny scale 0.48: 340 * 0.48 = 163px wide, 76 * 0.48 = 37px tall */
+  width: 163px;
+  height: 37px;
+  overflow: hidden;
+}
+
+/* ── PlatesBoardCard grid ── */
+.boardCard--plates {
+  background: linear-gradient(135deg, rgba(0,40,100,0.12), rgba(0,20,60,0.06));
+}
+
+.platesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+.platesGridItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.platesGridPlate {
+  /* small scale 0.68: 340 * 0.68 = 231px wide, 76 * 0.68 = 52px tall */
+  width: 231px;
+  height: 52px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.platesGridPrice {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+  font-family: 'Unbounded', sans-serif;
+  padding-left: 4px;
+}
+
+.platesGridPrice--none {
+  color: rgba(255,255,255,0.25);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.headerCardsCount {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  margin-left: 4px;
+}
