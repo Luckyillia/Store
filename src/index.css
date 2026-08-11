@@ -1,21 +1,24 @@
 :root {
-  --bg: #0c0c10;
-  --surface: #141418;
-  --surface2: #1c1c22;
-  --surface3: #252530;
-  --border: rgba(255, 255, 255, 0.07);
-  --border2: rgba(255, 255, 255, 0.14);
-  --text: #f0f0f5;
-  --text2: #8888a0;
-  --text3: #55556a;
-  --accent: #7c6aff;
-  --accent2: #5c4dcc;
-  --green: #32d68a;
-  --orange: #ff8c42;
-  --red: #ff4d6a;
-  --yellow: #ffd166;
-  --radius: 12px;
-  --radius-sm: 8px;
+  --bg: #0a0a0e;
+  --surface: #15151b;
+  --surface2: #1d1d25;
+  --surface3: #262631;
+  --border: rgba(255, 255, 255, 0.08);
+  --border2: rgba(255, 255, 255, 0.16);
+  --text: #f5f5fa;
+  --text2: #9696ad;
+  --text3: #5a5a70;
+  --accent: #8672ff;
+  --accent2: #6a56e8;
+  --accent-soft: rgba(134, 114, 255, 0.14);
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f76384;
+  --yellow: #fbc858;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -50,6 +53,10 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--surface3);
   border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent2);
 }
 
 body {

@@ -381,6 +381,15 @@ const framesDatabase = [
     },
     {
         id:               403,
+        badgeImage:       "../icons/frames/prov_camo_3.png",
+        name:             "Камуфляж «Серый реагент»",
+        type:             "Номерная рамка",
+        weight:           0.25,
+        description:      "Фиксирует государственный номер транспортного средства.",
+        event:            "Осень 2023"
+    },
+    {
+        id:               403,
         badgeImage:       "../icons/frames/prov_numberframe_55.png",
         name:             "Камуфляж «Песчаные бури»",
         type:             "Номерная рамка",
