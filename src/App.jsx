@@ -20,7 +20,6 @@ import { BoardCard } from './components/BoardCard';
 import { SummaryCard } from './components/SummaryCard';
 import { PlatesSection } from './components/PlatesSection';
 import { PlatesBoardCard, PLATES_PER_CARD } from './components/PlatesBoardCard';
-import { ScaledCard } from './components/ScaledCard';
 
 function App() {
   const [catalogQuery, setCatalogQuery] = useState('');
@@ -298,7 +297,7 @@ function App() {
             </h2>
           </div>
 
-          <div className="scroll-thin flex flex-1 flex-col items-stretch gap-6 overflow-y-auto p-6">
+          <div className="scroll-thin flex flex-1 flex-col items-center gap-6 overflow-y-auto p-6">
             {!saleItems.length && !plateItems.length ? (
               <div className="flex flex-1 items-center justify-center px-10 py-20 text-center font-body text-sm text-mute">
                 Добавь предметы — здесь появится карточка для скрина
@@ -306,42 +305,37 @@ function App() {
             ) : (
               <>
                 {itemCards.map((cardItems, idx) => (
-                  <ScaledCard key={`item-card-${idx}`}>
-                    <BoardCard
-                      cardItems={cardItems}
-                      cardNumber={idx + 1}
-                      totalCards={totalCards}
-                      seller={seller}
-                    />
-                  </ScaledCard>
+                  <BoardCard
+                    key={`item-card-${idx}`}
+                    cardItems={cardItems}
+                    cardNumber={idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                  />
                 ))}
 
                 {skinCards.map((cardItems, idx) => (
-                  <ScaledCard key={`skin-card-${idx}`}>
-                    <BoardCard
-                      cardItems={cardItems}
-                      cardNumber={itemCards.length + idx + 1}
-                      totalCards={totalCards}
-                      seller={seller}
-                      isSkins
-                    />
-                  </ScaledCard>
+                  <BoardCard
+                    key={`skin-card-${idx}`}
+                    cardItems={cardItems}
+                    cardNumber={itemCards.length + idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                    isSkins
+                  />
                 ))}
 
                 {plateCards.map((cardItems, idx) => (
-                  <ScaledCard key={`plate-card-${idx}`}>
-                    <PlatesBoardCard
-                      plateItems={cardItems}
-                      cardNumber={itemCards.length + skinCards.length + idx + 1}
-                      totalCards={totalCards}
-                      seller={seller}
-                    />
-                  </ScaledCard>
+                  <PlatesBoardCard
+                    key={`plate-card-${idx}`}
+                    plateItems={cardItems}
+                    cardNumber={itemCards.length + skinCards.length + idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                  />
                 ))}
 
-                <ScaledCard>
-                  <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
-                </ScaledCard>
+                <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
               </>
             )}
           </div>
