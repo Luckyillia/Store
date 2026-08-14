@@ -1031,7 +1031,7 @@ const wheelsDatabase = [
     {
         id:               378,
         badgeImage:       "../icons/wheels/5067.png",
-        name:             "Диски «?»",
+        name:             "Диски «HRE 205»",
         type:             "",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства."
@@ -1039,11 +1039,56 @@ const wheelsDatabase = [
     {
         id:               378,
         badgeImage:       "../icons/wheels/5144.png",
-        name:             "Диски «?»",
+        name:             "Диски «BMW Style 167»",
         type:             "",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
         event:            ""
+    },
+    {
+        id:               378,
+        badgeImage:       "../icons/wheels/5205.png",
+        name:             "Диски «Power Wheels MS040»",
+        type:             "Спортивные колеса",
+        weight:           36,
+        description:      "Неотъемлемая часть транспортного средства.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               378,
+        badgeImage:       "../icons/wheels/5206.png",
+        name:             "Диски «Rotiform WLD»",
+        type:             "Спортивные колеса",
+        weight:           36,
+        description:      "Неотъемлемая часть транспортного средства.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               378,
+        badgeImage:       "../icons/wheels/5207.png",
+        name:             "Диски «Power Wheels DC016»",
+        type:             "Спортивные колеса",
+        weight:           36,
+        description:      "Неотъемлемая часть транспортного средства.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               378,
+        badgeImage:       "../icons/wheels/5208.png",
+        name:             "Диски «Power Wheels SPLITO5»",
+        type:             "Спортивные колеса",
+        weight:           36,
+        description:      "Неотъемлемая часть транспортного средства.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               378,
+        badgeImage:       "../icons/wheels/5209.png",
+        name:             "Диски «Rotiform LHR-M»",
+        type:             "Спортивные колеса",
+        weight:           36,
+        description:      "Неотъемлемая часть транспортного средства.",
+        event:            "Province 10 Years"
     }
 ];
 

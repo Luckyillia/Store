@@ -447,7 +447,52 @@ const vinylsDatabase = [
         weight:           1,
         description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
         event:            "Частота 9.0"
-    }
+    },
+    {
+        id:               409,
+        badgeImage:       "../icons/vinyls/province_history_2026.png",
+        name:             "Винил «10 лет историй»",
+        type:             "Винил",
+        weight:           1,
+        description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               409,
+        badgeImage:       "../icons/vinyls/province_legacy_2026.png",
+        name:             "Винил «Наследие»",
+        type:             "Винил",
+        weight:           1,
+        description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               409,
+        badgeImage:       "../icons/vinyls/tiger_lion_2026.png",
+        name:             "Винил «Тигриный Лев»",
+        type:             "Винил",
+        weight:           1,
+        description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               409,
+        badgeImage:       "../icons/vinyls/carpetlet_2026.png",
+        name:             "Винил «Коврелёт»",
+        type:             "Винил",
+        weight:           1,
+        description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
+        event:            "Province 10 Years"
+    },
+    {
+        id:               409,
+        badgeImage:       "../icons/vinyls/delfts_blauw_2026.png",
+        name:             "Винил «Делфтский фаянс»",
+        type:             "Винил",
+        weight:           1,
+        description:      "Создаёт привлекающий образ для транспорта. В тюнинг-ателье должны уметь обращаться с такими вещами.",
+        event:            "Province 10 Years"
+    },
 ];
 
 window.vinylsDatabase = vinylsDatabase;
