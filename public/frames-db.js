@@ -988,7 +988,7 @@ const framesDatabase = [
     },
     {
         id:               403,
-        badgeImage:       "../icons/frames/177.png",
+        badgeImage:       "../icons/frames/178.png",
         name:             "Рамка «PROVINCE HISTORY»",
         type:             "Номерная рамка",
         weight:           0.25,
@@ -997,7 +997,7 @@ const framesDatabase = [
     },
     {
         id:               403,
-        badgeImage:       "../icons/frames/178.png",
+        badgeImage:       "../icons/frames/177.png",
         name:             "Рамка «НАСЛЕДИЕ»",
         type:             "Номерная рамка",
         weight:           0.25,
@@ -1007,7 +1007,7 @@ const framesDatabase = [
     {
         id:               403,
         badgeImage:       "../icons/frames/179.png",
-        name:             "Рамка «10 Лет историй!»E",
+        name:             "Рамка «10 Лет историй!»",
         type:             "Номерная рамка",
         weight:           0.25,
         description:      "Фиксирует государственный номер транспортного средства.",
