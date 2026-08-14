@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getIconPath, makeFallbackText } from '../utils/helpers';
 
 export function Icon({ item }) {
@@ -6,11 +6,18 @@ export function Icon({ item }) {
   const src = getIconPath(item);
 
   return (
-    <div className="itemIcon">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-hair bg-raised2">
       {!failed && src ? (
-        <img src={src} alt="" onError={() => setFailed(true)} />
+        <img
+          src={src}
+          alt=""
+          className="h-9 w-9 object-contain"
+          onError={() => setFailed(true)}
+        />
       ) : (
-        <div className="fallback">{makeFallbackText(item?.name)}</div>
+        <span className="px-1 text-center font-mono text-[10px] font-semibold leading-tight text-mute">
+          {makeFallbackText(item?.name)}
+        </span>
       )}
     </div>
   );

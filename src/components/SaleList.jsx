@@ -1,123 +1,146 @@
-import React from 'react';
+import { ChevronLeft, ChevronRight, Minus, Plus, X } from 'lucide-react';
 import { Icon } from './Icon';
 import { LicensePlate } from './LicensePlate';
 
-export function SaleList({ 
-  items, onRemoveItem, onClearAll, onSetQty, onSetPrice, 
+export function SaleList({
+  items, onRemoveItem, onClearAll, onSetQty, onSetPrice,
   seller, setSeller, catalogOpen, setCatalogOpen,
-  plateItems, onRemovePlate, onSetPlatePrice, onClearPlates
+  plateItems, onRemovePlate, onSetPlatePrice, onClearPlates,
 }) {
   const hasPlates = plateItems && plateItems.length > 0;
   const hasItems = items && items.length > 0;
+  const total = items.length + (plateItems?.length || 0);
 
   return (
-    <>
-      <div className="saleListHeader">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 items-center justify-between border-b border-hair px-4 py-3">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className={`catalogToggleBtn${catalogOpen ? ' catalogToggleBtn--open' : ''}`}
             onClick={() => setCatalogOpen((v) => !v)}
             title={catalogOpen ? 'Скрыть каталог' : 'Показать каталог'}
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-hair text-mute transition-colors hover:border-signal/50 hover:text-signal"
           >
-            {catalogOpen ? '◀' : '▶'}
+            {catalogOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
           </button>
-          <h2>
-            Добавлено{' '}
-            {(items.length + (plateItems?.length || 0)) > 0 ? (
-              <span style={{ color: 'var(--accent)', fontSize: 12 }}>
-                ({items.length + (plateItems?.length || 0)})
-              </span>
-            ) : null}
-          </h2>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-signal">
+            Добавлено{total > 0 ? ` (${total})` : ''}
+          </span>
         </div>
-        <button type="button" className="btnClear" onClick={onClearAll}>
+        <button
+          type="button"
+          onClick={onClearAll}
+          className="rounded-md px-2 py-1 font-body text-[11px] text-danger transition-colors hover:bg-danger/10"
+        >
           Очистить
         </button>
       </div>
 
-      <div className="saleList">
+      <div className="scroll-thin flex-1 overflow-y-auto p-3">
         {!hasItems && !hasPlates ? (
-          <div className="saleEmpty">
+          <div className="py-10 text-center font-body text-xs leading-relaxed text-mute">
             Нажимай на предметы в каталоге
-            <br />или добавляй номера сверху
+            <br />
+            или добавляй номера сверху
           </div>
         ) : (
           <>
-            {/* Regular items */}
             {items.map((s, idx) => (
-              <div className="saleRow" key={s.key}>
+              <div
+                key={s.key}
+                className="mb-2 flex items-center gap-2.5 rounded-md border border-hair bg-panel p-2.5 transition-colors hover:border-signal/30"
+              >
                 <Icon item={s.item} />
 
-                <div className="itemInfo">
-                  <p className="saleRowName">{s.item.name}</p>
-                </div>
+                <p className="min-w-0 flex-1 truncate font-body text-[11px] font-medium text-ink">
+                  {s.item.name}
+                </p>
 
-                <div className="saleRowPrice">
-                  <input
-                    type="text"
-                    value={s.price}
-                    placeholder="Цена $"
-                    onChange={(e) => onSetPrice(idx, e.target.value)}
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={s.price}
+                  placeholder="Цена $"
+                  onChange={(e) => onSetPrice(idx, e.target.value)}
+                  className="w-20 rounded-md border border-hair bg-raised px-2 py-1 text-right font-mono text-[11px] text-ink outline-none transition-colors focus:border-signal/50"
+                />
 
-                <div className="qtyWrap">
-                  <button type="button" className="qtyBtn" onClick={() => onSetQty(idx, s.qty - 1)}>−</button>
-                  <span className="qtyVal">{s.qty}</span>
-                  <button type="button" className="qtyBtn" onClick={() => onSetQty(idx, s.qty + 1)}>+</button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onSetQty(idx, s.qty - 1)}
+                    className="flex h-5 w-5 items-center justify-center rounded border border-hair text-ink transition-colors hover:border-signal hover:bg-signal/15"
+                  >
+                    <Minus size={11} />
+                  </button>
+                  <span className="w-5 text-center font-mono text-xs font-semibold text-ink">
+                    {s.qty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onSetQty(idx, s.qty + 1)}
+                    className="flex h-5 w-5 items-center justify-center rounded border border-hair text-ink transition-colors hover:border-signal hover:bg-signal/15"
+                  >
+                    <Plus size={11} />
+                  </button>
                 </div>
 
                 <button
                   type="button"
-                  className="delBtn"
                   onClick={() => onRemoveItem(idx)}
                   aria-label="Удалить"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-mute transition-colors hover:bg-danger/10 hover:text-danger"
                 >
-                  ×
+                  <X size={14} />
                 </button>
               </div>
             ))}
 
-            {/* Plates section */}
             {hasPlates && (
               <>
-                <div className="platesListDivider">
-                  <span>Номера</span>
-                  <button type="button" className="btnClear" onClick={onClearPlates} style={{ fontSize: 10 }}>
+                <div className="mb-2 mt-3 flex items-center justify-between px-1">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-mute">
+                    Номера
+                  </span>
+                  <button
+                    type="button"
+                    onClick={onClearPlates}
+                    className="font-body text-[10px] text-danger hover:underline"
+                  >
                     Очистить
                   </button>
                 </div>
 
                 {plateItems.map((p) => (
-                  <div className="saleRow saleRow--plate" key={p.key}>
-                    <div className="plateRowPreview">
+                  <div
+                    key={p.key}
+                    className="mb-2 flex items-center gap-2.5 rounded-md border border-hair bg-panel p-2.5 transition-colors hover:border-signal/30"
+                  >
+                    <div className="w-[100px] shrink-0 overflow-hidden">
                       <LicensePlate number={p.number} region={p.region} size="tiny" />
                     </div>
 
-                    <div className="itemInfo">
-                      <p className="saleRowName" style={{ fontFamily: 'monospace', letterSpacing: 1 }}>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-mono text-[11px] font-medium tracking-wider text-ink">
                         {p.number}
                       </p>
-                      <p style={{ fontSize: 10, color: 'var(--text3)', margin: 0 }}>Регион {p.region}</p>
+                      <p className="font-body text-[10px] text-mute">Регион {p.region}</p>
                     </div>
 
-                    <div className="saleRowPrice">
-                      <input
-                        type="text"
-                        value={p.price}
-                        placeholder="Цена $"
-                        onChange={(e) => onSetPlatePrice(p.key, e.target.value)}
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      value={p.price}
+                      placeholder="Цена $"
+                      onChange={(e) => onSetPlatePrice(p.key, e.target.value)}
+                      className="w-20 rounded-md border border-hair bg-raised px-2 py-1 text-right font-mono text-[11px] text-ink outline-none transition-colors focus:border-signal/50"
+                    />
 
                     <button
                       type="button"
-                      className="delBtn"
                       onClick={() => onRemovePlate(p.key)}
                       aria-label="Удалить"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-mute transition-colors hover:bg-danger/10 hover:text-danger"
                     >
-                      ×
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
@@ -127,14 +150,14 @@ export function SaleList({
         )}
       </div>
 
-      <div className="sidebarBottom">
+      <div className="shrink-0 border-t border-hair p-3">
         <input
-          className="sellerInput"
           value={seller}
           onChange={(e) => setSeller(e.target.value)}
           placeholder="Ваш ник / контакт для покупателя"
+          className="w-full rounded-md border border-hair bg-raised px-3 py-2 text-center font-body text-xs text-ink outline-none transition-colors focus:border-signal/50"
         />
       </div>
-    </>
+    </div>
   );
 }

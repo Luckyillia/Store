@@ -1,22 +1,19 @@
-import './App.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 // Constants & Utils
-import { 
-  ITEMS_PER_CARD, 
-  SKINS_PER_CARD, 
-  STORAGE_KEY, 
-  FILTER_CONFIG, 
-  FILTER_DEFAULTS, 
-  CATEGORY_ORDER 
+import {
+  ITEMS_PER_CARD,
+  SKINS_PER_CARD,
+  STORAGE_KEY,
+  FILTER_CONFIG,
+  FILTER_DEFAULTS,
+  CATEGORY_ORDER,
 } from './constants';
-import { 
-  getItemKey, 
-  getItemCategory, 
-} from './utils/helpers';
+import { getItemKey, getItemCategory } from './utils/helpers';
 import { saveSaleState } from './utils/storage';
 
 // Components
+import { Header } from './components/Header';
 import { Catalog } from './components/Catalog';
 import { SaleList } from './components/SaleList';
 import { BoardCard } from './components/BoardCard';
@@ -43,7 +40,7 @@ function App() {
     return raw.filter((i) => i && typeof i.id === 'number' && i.name);
   }, [dbReady]);
 
-  // Initial Load from LocalStorage
+  // Initial load from localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -79,10 +76,10 @@ function App() {
     }
   }, []);
 
-  // Save to LocalStorage on changes
+  // Save to localStorage on changes
   useEffect(() => {
     if (!isLoaded) return;
-    
+
     saveSaleState(STORAGE_KEY, {
       seller,
       catalogQuery,
@@ -92,7 +89,7 @@ function App() {
     });
   }, [seller, catalogQuery, hiddenTypes, saleItems, plateItems, isLoaded]);
 
-  // Database Readiness Check
+  // Database readiness check
   useEffect(() => {
     function checkReady() {
       if (window.getAllItems && Array.isArray(window.getAllItems())) {
@@ -172,7 +169,7 @@ function App() {
     });
   }
 
-  // ── Plates ──
+  // Plates
   function addPlate({ number, region, price }) {
     const key = `plate::${number}::${region}::${Date.now()}`;
     setPlateItems((prev) => [...prev, { key, number, region, price }]);
@@ -183,9 +180,7 @@ function App() {
   }
 
   function setPlatePrice(key, price) {
-    setPlateItems((prev) =>
-      prev.map((p) => p.key === key ? { ...p, price } : p)
-    );
+    setPlateItems((prev) => prev.map((p) => (p.key === key ? { ...p, price } : p)));
   }
 
   function clearPlates() {
@@ -210,16 +205,16 @@ function App() {
       if (ao !== bo) return ao - bo;
       return String(a.item?.name || '').localeCompare(String(b.item?.name || ''), 'ru');
     });
-    
+
     const itemCardsArr = [];
     for (let i = 0; i < sortedItems.length; i += ITEMS_PER_CARD) {
       itemCardsArr.push(sortedItems.slice(i, i + ITEMS_PER_CARD));
     }
 
-    const sortedSkins = [...skins].sort((a, b) => {
-      return String(a.item?.name || '').localeCompare(String(b.item?.name || ''), 'ru');
-    });
-    
+    const sortedSkins = [...skins].sort((a, b) =>
+      String(a.item?.name || '').localeCompare(String(b.item?.name || ''), 'ru')
+    );
+
     const skinCardsArr = [];
     for (let i = 0; i < sortedSkins.length; i += SKINS_PER_CARD) {
       skinCardsArr.push(sortedSkins.slice(i, i + SKINS_PER_CARD));
@@ -228,7 +223,6 @@ function App() {
     return { itemCards: itemCardsArr, skinCards: skinCardsArr };
   }, [saleItems]);
 
-  // Plate cards
   const plateCards = useMemo(() => {
     const cards = [];
     for (let i = 0; i < plateItems.length; i += PLATES_PER_CARD) {
@@ -238,111 +232,113 @@ function App() {
   }, [plateItems]);
 
   const totalCards = itemCards.length + skinCards.length + plateCards.length;
+  const totalAdded = saleItems.length + plateItems.length;
 
   return (
-    <div className={`app${catalogOpen ? '' : ' app--catalogHidden'}`}>
-      {/* LEFT SIDEBAR: CATALOG */}
-      <div className={`sidebar${catalogOpen ? '' : ' sidebar--hidden'}`}>
-        <div className="sidebarHeader">
-          <div className="logo">
-            <div className="logoIcon">SA</div>
-            <div className="logoText">
-              <h1>Sokirovskiy Accessory</h1>
-              <span>Доска продаж</span>
+    <div className="flex h-screen flex-col bg-base text-ink">
+      <Header totalAdded={totalAdded} seller={seller} />
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Catalog sidebar */}
+        <div
+          className={`flex shrink-0 flex-col overflow-hidden border-r border-hair bg-panel transition-[width] duration-200 ${
+            catalogOpen ? 'w-[400px]' : 'w-0 border-r-0'
+          }`}
+        >
+          <div className="flex h-full min-h-0 w-[400px] flex-col">
+            <PlatesSection onAddPlate={addPlate} />
+            <div className="min-h-0 flex-1">
+              <Catalog
+                items={catalogItems}
+                onAddItem={addItem}
+                filtersOpen={filtersOpen}
+                setFiltersOpen={setFiltersOpen}
+                hiddenTypes={hiddenTypes}
+                setHiddenTypes={setHiddenTypes}
+                filterConfig={FILTER_CONFIG}
+                catalogQuery={catalogQuery}
+                setCatalogQuery={setCatalogQuery}
+                inputRef={inputRef}
+              />
             </div>
           </div>
         </div>
 
-        {/* Plates section above catalog */}
-        <PlatesSection onAddPlate={addPlate} />
-
-        <Catalog 
-          items={catalogItems}
-          onAddItem={addItem}
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-          hiddenTypes={hiddenTypes}
-          setHiddenTypes={setHiddenTypes}
-          filterConfig={FILTER_CONFIG}
-          catalogQuery={catalogQuery}
-          setCatalogQuery={setCatalogQuery}
-          inputRef={inputRef}
-        />
-      </div>
-
-      {/* MIDDLE SIDEBAR: ADDED ITEMS */}
-      <div className="sidebarSecondary">
-        <SaleList 
-          items={saleItems}
-          onRemoveItem={removeItem}
-          onClearAll={clearAll}
-          onSetQty={setQty}
-          onSetPrice={setPrice}
-          seller={seller}
-          setSeller={setSeller}
-          catalogOpen={catalogOpen}
-          setCatalogOpen={setCatalogOpen}
-          plateItems={plateItems}
-          onRemovePlate={removePlate}
-          onSetPlatePrice={setPlatePrice}
-          onClearPlates={clearPlates}
-        />
-      </div>
-
-      {/* MAIN AREA: PREVIEW */}
-      <div className="main">
-        <div className="mainHeader">
-          <h2>
-            Предпросмотр (сеткой)
-            {totalCards > 1 && (
-              <span className="headerCardsCount">
-                — {totalCards} объявлен{totalCards === 2 ? 'ия' : totalCards <= 4 ? 'ия' : 'ий'}
-              </span>
-            )}
-          </h2>
+        {/* Cart / added items */}
+        <div className="flex w-[360px] shrink-0 flex-col border-r border-hair bg-panel">
+          <SaleList
+            items={saleItems}
+            onRemoveItem={removeItem}
+            onClearAll={clearAll}
+            onSetQty={setQty}
+            onSetPrice={setPrice}
+            seller={seller}
+            setSeller={setSeller}
+            catalogOpen={catalogOpen}
+            setCatalogOpen={setCatalogOpen}
+            plateItems={plateItems}
+            onRemovePlate={removePlate}
+            onSetPlatePrice={setPlatePrice}
+            onClearPlates={clearPlates}
+          />
         </div>
 
-        <div className="previewArea">
-          {!saleItems.length && !plateItems.length ? (
-            <div className="noPreview">
-              Добавь предметы — справа появится карточка для скрина
-            </div>
-          ) : (
-            <>
-              {itemCards.map((cardItems, idx) => (
-                <BoardCard 
-                  key={`item-card-${idx}`}
-                  cardItems={cardItems}
-                  cardNumber={idx + 1}
-                  totalCards={totalCards}
-                  seller={seller}
-                />
-              ))}
+        {/* Preview */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex shrink-0 items-center justify-between border-b border-hair px-6 py-4">
+            <h2 className="font-display text-lg tracking-wide text-ink">
+              Предпросмотр (сеткой)
+              {totalCards > 1 && (
+                <span className="ml-2 font-body text-xs font-normal text-mute">
+                  — {totalCards} объявлен
+                  {totalCards === 2 ? 'ия' : totalCards <= 4 ? 'ия' : 'ий'}
+                </span>
+              )}
+            </h2>
+          </div>
 
-              {skinCards.map((cardItems, idx) => (
-                <BoardCard 
-                  key={`skin-card-${idx}`}
-                  cardItems={cardItems}
-                  cardNumber={itemCards.length + idx + 1}
-                  totalCards={totalCards}
-                  seller={seller}
-                  isSkins={true}
-                />
-              ))}
+          <div className="scroll-thin flex flex-1 flex-col items-center gap-6 overflow-y-auto p-6">
+            {!saleItems.length && !plateItems.length ? (
+              <div className="flex flex-1 items-center justify-center px-10 py-20 text-center font-body text-sm text-mute">
+                Добавь предметы — здесь появится карточка для скрина
+              </div>
+            ) : (
+              <>
+                {itemCards.map((cardItems, idx) => (
+                  <BoardCard
+                    key={`item-card-${idx}`}
+                    cardItems={cardItems}
+                    cardNumber={idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                  />
+                ))}
 
-              {plateCards.map((cardItems, idx) => (
-                <PlatesBoardCard
-                  key={`plate-card-${idx}`}
-                  plateItems={cardItems}
-                  cardNumber={itemCards.length + skinCards.length + idx + 1}
-                  totalCards={totalCards}
-                  seller={seller}
-                />
-              ))}
+                {skinCards.map((cardItems, idx) => (
+                  <BoardCard
+                    key={`skin-card-${idx}`}
+                    cardItems={cardItems}
+                    cardNumber={itemCards.length + idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                    isSkins
+                  />
+                ))}
 
-              <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
-            </>
-          )}
+                {plateCards.map((cardItems, idx) => (
+                  <PlatesBoardCard
+                    key={`plate-card-${idx}`}
+                    plateItems={cardItems}
+                    cardNumber={itemCards.length + skinCards.length + idx + 1}
+                    totalCards={totalCards}
+                    seller={seller}
+                  />
+                ))}
+
+                <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
