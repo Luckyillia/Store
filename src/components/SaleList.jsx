@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from 'lucide-react';
 import { Icon } from './Icon';
 import { LicensePlate } from './LicensePlate';
+import { getPrimaryCharacteristicsText } from '../utils/helpers';
 
 export function SaleList({
   items, onRemoveItem, onClearAll, onSetQty, onSetPrice,
@@ -52,9 +53,14 @@ export function SaleList({
               >
                 <Icon item={s.item} />
 
-                <p className="min-w-0 flex-1 truncate font-body text-[11px] font-medium text-ink">
-                  {s.item.name}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-body text-[11px] font-medium text-ink">{s.item.name}</p>
+                  {getPrimaryCharacteristicsText(s.item) ? (
+                    <p className="break-words font-mono text-[9px] text-mute">
+                      {getPrimaryCharacteristicsText(s.item)}
+                    </p>
+                  ) : null}
+                </div>
 
                 <input
                   type="text"

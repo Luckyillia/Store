@@ -75,3 +75,58 @@ export function getItemCategory(item) {
   if (type === 'Опыт') return 'exp';
   return 'other';
 }
+
+
+export const NO_EVENT_KEY = '__none__';
+export const NO_EVENT_LABEL = 'Без ивента';
+
+export function getEventKey(item) {
+  const ev = String(item?.event || '').trim();
+  return ev || NO_EVENT_KEY;
+}
+
+export function getUniqueEvents(db) {
+  const set = new Set();
+  db.forEach((item) => set.add(getEventKey(item)));
+  const events = Array.from(set)
+    .filter((e) => e !== NO_EVENT_KEY)
+    .sort((a, b) => a.localeCompare(b, 'ru'));
+  return set.has(NO_EVENT_KEY) ? [...events, NO_EVENT_KEY] : events;
+}
+
+export function getPrimaryCharacteristicsText(item) {
+  if (!item) return '';
+  const parts = [];
+  if (item.capacity) parts.push(item.capacity);
+  if (item.weight !== undefined && item.weight !== null && item.weight !== '') {
+    const w = Number(item.weight);
+    parts.push(`${isNaN(w) ? item.weight : w} кг`);
+  }
+  if (item.health !== undefined && item.health !== null) {
+    parts.push(`+${item.health} хп`);
+  }
+  if (item.food !== undefined && item.food !== null) {
+    parts.push(`+${item.food} сытости`);
+  }
+  return parts.join(' · ');
+}
+
+export function sortItems(items, sortKey) {
+  const arr = [...items];
+  switch (sortKey) {
+    case 'name-asc':
+      return arr.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ru'));
+    case 'name-desc':
+      return arr.sort((a, b) => String(b.name || '').localeCompare(String(a.name || ''), 'ru'));
+    case 'weight-asc':
+      return arr.sort((a, b) => (Number(a.weight) || 0) - (Number(b.weight) || 0));
+    case 'weight-desc':
+      return arr.sort((a, b) => (Number(b.weight) || 0) - (Number(a.weight) || 0));
+    case 'price-asc':
+      return arr.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    case 'price-desc':
+      return arr.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    default:
+      return arr;
+  }
+}

@@ -67,3 +67,14 @@ export const CATEGORY_ORDER = [
   'Фракционные патроны',
   'Парашют',
 ];
+
+
+export const SORT_OPTIONS = [
+  { key: 'default', label: 'По умолчанию' },
+  { key: 'name-asc', label: 'Имя (А → Я)' },
+  { key: 'name-desc', label: 'Имя (Я → А)' },
+  { key: 'weight-asc', label: 'Вес (лёгкие → тяжёлые)' },
+  { key: 'weight-desc', label: 'Вес (тяжёлые → лёгкие)' },
+  { key: 'price-asc', label: 'Цена (дешёвые → дорогие)' },
+  { key: 'price-desc', label: 'Цена (дорогие → дешёвые)' },
+];

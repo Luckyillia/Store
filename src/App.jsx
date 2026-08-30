@@ -8,8 +8,17 @@ import {
   FILTER_CONFIG,
   FILTER_DEFAULTS,
   CATEGORY_ORDER,
+  SORT_OPTIONS,
 } from './constants';
-import { getItemKey, getItemCategory } from './utils/helpers';
+import {
+  getItemKey,
+  getItemCategory,
+  getEventKey,
+  getUniqueEvents,
+  sortItems,
+  NO_EVENT_KEY,
+  NO_EVENT_LABEL,
+} from './utils/helpers';
 import { saveSaleState } from './utils/storage';
 
 // Components
@@ -24,8 +33,9 @@ import { PlatesBoardCard, PLATES_PER_CARD } from './components/PlatesBoardCard';
 function App() {
   const [catalogQuery, setCatalogQuery] = useState('');
   const [catalogOpen, setCatalogOpen] = useState(true);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [hiddenTypes, setHiddenTypes] = useState({ ...FILTER_DEFAULTS });
+  const [eventFilter, setEventFilter] = useState(new Set());
+  const [sortOption, setSortOption] = useState('default');
   const [seller, setSeller] = useState('');
   const [saleItems, setSaleItems] = useState([]);
   const [plateItems, setPlateItems] = useState([]);
@@ -51,6 +61,12 @@ function App() {
         if (typeof parsed?.catalogQuery === 'string') setCatalogQuery(parsed.catalogQuery);
         if (parsed?.hiddenTypes && typeof parsed.hiddenTypes === 'object') {
           setHiddenTypes({ ...FILTER_DEFAULTS, ...parsed.hiddenTypes });
+        }
+        if (Array.isArray(parsed?.eventFilter)) {
+          setEventFilter(new Set(parsed.eventFilter));
+        }
+        if (typeof parsed?.sortOption === 'string') {
+          setSortOption(parsed.sortOption);
         }
 
         if (Array.isArray(parsed?.saleItems)) {
@@ -84,10 +100,12 @@ function App() {
       seller,
       catalogQuery,
       hiddenTypes,
+      eventFilter: Array.from(eventFilter),
+      sortOption,
       saleItems,
       plateItems,
     });
-  }, [seller, catalogQuery, hiddenTypes, saleItems, plateItems, isLoaded]);
+  }, [seller, catalogQuery, hiddenTypes, eventFilter, sortOption, saleItems, plateItems, isLoaded]);
 
   // Database readiness check
   useEffect(() => {
@@ -106,28 +124,58 @@ function App() {
     }
   }, []);
 
+  const visibleTypes = useMemo(() => {
+    const set = new Set();
+    FILTER_CONFIG.forEach((f) => {
+      if (!hiddenTypes[f.key]) set.add(f.key);
+    });
+    return set;
+  }, [hiddenTypes]);
+
+  function handleVisibleTypesChange(nextVisibleSet) {
+    setHiddenTypes((prev) => {
+      const next = { ...prev };
+      FILTER_CONFIG.forEach((f) => {
+        next[f.key] = !nextVisibleSet.has(f.key);
+      });
+      return next;
+    });
+  }
+
+  const eventOptions = useMemo(() => {
+    return getUniqueEvents(db).map((k) => ({
+      key: k,
+      label: k === NO_EVENT_KEY ? NO_EVENT_LABEL : k,
+    }));
+  }, [db]);
+
   const filteredDb = useMemo(() => {
     return db.filter((item) => {
       const cat = getItemCategory(item);
-      return !hiddenTypes[cat];
+      if (hiddenTypes[cat]) return false;
+      if (eventFilter.size > 0 && !eventFilter.has(getEventKey(item))) return false;
+      return true;
     });
-  }, [db, hiddenTypes]);
+  }, [db, hiddenTypes, eventFilter]);
 
   const catalogItems = useMemo(() => {
     const q = catalogQuery.trim().toLowerCase();
-    if (!q) return filteredDb;
-    return filteredDb.filter((i) => {
-      const name = String(i.name || '').toLowerCase();
-      const type = String(i.type || '').toLowerCase();
-      const event = String(i.event || '').toLowerCase();
-      return (
-        name.includes(q) ||
-        type.includes(q) ||
-        event.includes(q) ||
-        String(i.id).includes(q)
-      );
-    });
-  }, [catalogQuery, filteredDb]);
+    let list = filteredDb;
+    if (q) {
+      list = list.filter((i) => {
+        const name = String(i.name || '').toLowerCase();
+        const type = String(i.type || '').toLowerCase();
+        const event = String(i.event || '').toLowerCase();
+        return (
+          name.includes(q) ||
+          type.includes(q) ||
+          event.includes(q) ||
+          String(i.id).includes(q)
+        );
+      });
+    }
+    return sortItems(list, sortOption);
+  }, [catalogQuery, filteredDb, sortOption]);
 
   function addItem(item) {
     const key = getItemKey(item);
@@ -251,11 +299,14 @@ function App() {
               <Catalog
                 items={catalogItems}
                 onAddItem={addItem}
-                filtersOpen={filtersOpen}
-                setFiltersOpen={setFiltersOpen}
-                hiddenTypes={hiddenTypes}
-                setHiddenTypes={setHiddenTypes}
-                filterConfig={FILTER_CONFIG}
+                typeOptions={FILTER_CONFIG}
+                visibleTypes={visibleTypes}
+                onVisibleTypesChange={handleVisibleTypesChange}
+                eventOptions={eventOptions}
+                eventFilter={eventFilter}
+                setEventFilter={setEventFilter}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
                 catalogQuery={catalogQuery}
                 setCatalogQuery={setCatalogQuery}
                 inputRef={inputRef}

@@ -3431,7 +3431,23 @@ const itemsDatabase = [
         type:             "",
         // weight:           0.1,
         // description:      ""
-    }
+    },
+{
+        id:               1048,
+        name:             "Декоративная фигурка «Трамвай»",
+        type:             "Предмет в руки",
+        weight:           2.4,
+        description:      "Маленькое и милое украшение для дома.",
+        event:            "Провинция 10 лет"
+    },
+{
+        id:               1049,
+        name:             "Декоративная подушка «Трамвай»",
+        type:             "Предмет в руки",
+        weight:           2.4,
+        description:      "Маленькое и милое украшение для дома.",
+        event:            "Провинция 10 лет"
+    },
 ];
 
 window.itemsDatabase = itemsDatabase;

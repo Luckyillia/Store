@@ -1,4 +1,4 @@
-import { getIconPath, formatDateRu } from '../utils/helpers';
+import { getIconPath, formatDateRu, getPrimaryCharacteristicsText } from '../utils/helpers';
 
 export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins = false }) {
   return (
@@ -69,9 +69,14 @@ export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins =
               )}
 
               <div className={`flex flex-col gap-1 ${isSkins ? 'mt-1' : ''}`}>
-                <div className="h-[26px] overflow-hidden font-body text-[11px] font-bold leading-tight text-ink">
+                <div className="break-words font-body text-[11px] font-bold leading-tight text-ink">
                   {s.item.name}
                 </div>
+                {!isSkins && getPrimaryCharacteristicsText(s.item) ? (
+                  <div className="break-words font-mono text-[9px] leading-snug text-mute">
+                    {getPrimaryCharacteristicsText(s.item)}
+                  </div>
+                ) : null}
                 {price ? (
                   <div className="font-display text-sm font-bold text-amber">{price}</div>
                 ) : (
@@ -85,7 +90,7 @@ export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins =
 
       <div className="mt-3.5 flex items-center justify-between border-t border-white/5 pt-3">
         <div className="font-display text-[9px] font-bold tracking-[0.1em] text-ink/15">
-          PROVHUB · MTA PROVINCE
+          Sokirovskiy Accessory · MTA PROVINCE
         </div>
         <div className="font-body text-[11px] text-ink/25">{formatDateRu(new Date())}</div>
       </div>
