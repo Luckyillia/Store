@@ -1052,7 +1052,7 @@ const wheelsDatabase = [
         type:             "Спортивные колеса",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
-        event:            "Province 10 Years"
+        event:            "Провинция 10 лет"
     },
     {
         id:               378,
@@ -1061,7 +1061,7 @@ const wheelsDatabase = [
         type:             "Спортивные колеса",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
-        event:            "Province 10 Years"
+        event:            "Провинция 10 лет"
     },
     {
         id:               378,
@@ -1070,7 +1070,7 @@ const wheelsDatabase = [
         type:             "Спортивные колеса",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
-        event:            "Province 10 Years"
+        event:            "Провинция 10 лет"
     },
     {
         id:               378,
@@ -1079,7 +1079,7 @@ const wheelsDatabase = [
         type:             "Спортивные колеса",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
-        event:            "Province 10 Years"
+        event:            "Провинция 10 лет"
     },
     {
         id:               378,
@@ -1088,7 +1088,7 @@ const wheelsDatabase = [
         type:             "Спортивные колеса",
         weight:           36,
         description:      "Неотъемлемая часть транспортного средства.",
-        event:            "Province 10 Years"
+        event:            "Провинция 10 лет"
     }
 ];
 
