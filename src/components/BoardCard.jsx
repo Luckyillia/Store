@@ -1,12 +1,10 @@
 import { getIconPath, formatDateRu, getPrimaryCharacteristicsText } from '../utils/helpers';
 
-
 export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins = false }) {
-  // BoardCard.jsx
-  const GRID_COLS = isSkins ? 'grid-cols-5' : 'grid-cols-4'; // или что реально нужно
+  const GRID_COLS = isSkins ? 'grid-cols-6' : 'grid-cols-6';
 
   return (
-    <div className="relative w-[860px] min-w-[860px] rounded-2xl border border-hair bg-panel p-6 shadow-card">
+    <div className="relative w-[1160px] min-w-[1160px] rounded-2xl border border-hair bg-panel p-5 shadow-card">
       {totalCards > 1 && (
         <div className="absolute right-14 top-4 rounded-full border border-hair bg-raised px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-mute">
           {cardNumber} / {totalCards}
@@ -33,14 +31,14 @@ export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins =
 
       <div className="mb-4 h-px bg-hair" />
 
-      <div className={`grid ${GRID_COLS} gap-2.5`}>
+      <div className={`grid ${GRID_COLS} gap-2`}>
         {cardItems.map((s) => {
           const price = String(s.price || '').trim();
           return (
             <div
               key={s.key}
-              className={`flex flex-col gap-2 rounded-xl border border-hair bg-raised p-3 ${
-                isSkins ? '' : 'min-h-[156px]'
+              className={`flex flex-col gap-2 rounded-xl border border-hair bg-raised p-2.5 ${
+                isSkins ? '' : 'min-h-[138px]'
               }`}
             >
               {isSkins ? (
@@ -56,11 +54,11 @@ export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins =
                 </div>
               ) : (
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex h-[66px] w-[66px] items-center justify-center overflow-hidden rounded-lg bg-raised2">
+                  <div className="flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-lg bg-raised2">
                     <img
                       src={getIconPath(s.item) || ''}
                       alt=""
-                      className="h-[58px] w-[58px] object-contain"
+                      className="h-[50px] w-[50px] object-contain"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}

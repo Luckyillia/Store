@@ -5,7 +5,7 @@ const PLATES_PER_CARD = 12;
 
 export function PlatesBoardCard({ plateItems, cardNumber, totalCards, seller }) {
   return (
-    <div className="relative w-[860px] min-w-[860px] rounded-2xl border border-hair bg-panel p-6 shadow-card">
+    <div className="relative w-[1160px] min-w-[1160px] rounded-2xl border border-hair bg-panel p-6 shadow-card">
       {totalCards > 1 && (
         <div className="absolute right-14 top-4 rounded-full border border-hair bg-raised px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-mute">
           {cardNumber} / {totalCards}

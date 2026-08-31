@@ -27,7 +27,7 @@ export function SummaryCard({ saleItems, plateItems = [], seller }) {
   const rows = Object.entries(cats).sort((a, b) => b[1].count - a[1].count);
 
   return (
-    <div className="relative w-[860px] min-w-[860px] rounded-2xl border border-signal/30 bg-panel p-6 shadow-card">
+    <div className="relative w-[1160px] min-w-[1160px] rounded-2xl border border-signal/30 bg-panel p-6 shadow-card">
       <div className="mb-3 flex items-center justify-center gap-3">
         <div className="font-display text-lg tracking-wide text-ink">📊 ИТОГО</div>
         {seller ? (
