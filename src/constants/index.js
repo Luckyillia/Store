@@ -18,6 +18,9 @@ export const FILTER_CONFIG = [
   { key: 'tools', label: 'Инструменты' },
   { key: 'cassettes', label: 'Аудио' },
   { key: 'other', label: 'Неизвестные' },
+  { key: 'recipes', label: 'Рецепты' },
+  { key: 'gifts', label: 'Подарки' },
+  { key: 'exp', label: 'Опыт' },
 ];
 
 export const FILTER_DEFAULTS = {

@@ -1,6 +1,10 @@
 import { getIconPath, formatDateRu, getPrimaryCharacteristicsText } from '../utils/helpers';
 
+
 export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins = false }) {
+  // BoardCard.jsx
+  const GRID_COLS = isSkins ? 'grid-cols-5' : 'grid-cols-4'; // или что реально нужно
+
   return (
     <div className="relative w-[860px] min-w-[860px] rounded-2xl border border-hair bg-panel p-6 shadow-card">
       {totalCards > 1 && (
@@ -29,7 +33,7 @@ export function BoardCard({ cardItems, cardNumber, totalCards, seller, isSkins =
 
       <div className="mb-4 h-px bg-hair" />
 
-      <div className="grid grid-cols-6 gap-2.5">
+      <div className={`grid ${GRID_COLS} gap-2.5`}>
         {cardItems.map((s) => {
           const price = String(s.price || '').trim();
           return (
