@@ -1,3 +1,4 @@
+import { Check, Layers } from 'lucide-react';
 import { getIconPath, getItemKey, getPrimaryCharacteristicsText } from '../utils/helpers';
 import { MultiSelectDropdown, SingleSelectDropdown } from './Dropdown';
 import { SORT_OPTIONS } from '../constants';
@@ -16,15 +17,34 @@ export function Catalog({
   catalogQuery,
   setCatalogQuery,
   inputRef,
+  selectMode,
+  onToggleSelectMode,
+  selectedKeys,
+  onToggleSelectItem,
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="shrink-0 border-b border-hair p-4">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-signal">
             Каталог
           </span>
-          <span className="font-mono text-[11px] text-mute">Показано: {items.length}</span>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[11px] text-mute">Показано: {items.length}</span>
+            <button
+              type="button"
+              onClick={onToggleSelectMode}
+              title={selectMode ? 'Выйти из режима сета' : 'Выбрать предметы для сета'}
+              className={`flex items-center gap-1 rounded-md border px-2 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors ${
+                selectMode
+                  ? 'border-signal bg-signal/20 text-signal'
+                  : 'border-hair text-mute hover:border-signal/40 hover:text-ink'
+              }`}
+            >
+              <Layers size={12} />
+              Сет
+            </button>
+          </div>
         </div>
 
         <input
@@ -57,19 +77,40 @@ export function Catalog({
             onChange={setSortOption}
           />
         </div>
+
+        {selectMode && (
+          <div className="mt-2.5 rounded-md border border-signal/30 bg-signal/10 px-2.5 py-1.5 font-body text-[11px] text-signal">
+            Режим сета: клик по предмету добавляет его в набор снизу.
+          </div>
+        )}
       </div>
 
       <div className="scroll-thin flex-1 overflow-y-auto p-3">
         <div className="grid grid-cols-3 gap-2.5">
           {items.map((item) => {
             const chars = getPrimaryCharacteristicsText(item);
+            const key = getItemKey(item);
+            const isSelected = selectMode && selectedKeys.has(key);
             return (
               <button
-                key={getItemKey(item)}
+                key={key}
                 type="button"
-                onClick={() => onAddItem(item)}
-                className="group flex flex-col items-center gap-1.5 rounded-md border border-hair bg-panel p-2.5 text-center transition-all hover:-translate-y-0.5 hover:border-signal/50"
+                onClick={() => (selectMode ? onToggleSelectItem(item) : onAddItem(item))}
+                className={`group relative flex flex-col items-center gap-1.5 rounded-md border p-2.5 text-center transition-all hover:-translate-y-0.5 ${
+                  isSelected ? 'border-signal bg-signal/10' : 'border-hair bg-panel hover:border-signal/50'
+                }`}
               >
+                {selectMode && (
+                  <span
+                    className={`absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full border ${
+                      isSelected
+                        ? 'border-signal bg-signal text-base'
+                        : 'border-hair bg-raised2 text-transparent'
+                    }`}
+                  >
+                    <Check size={11} strokeWidth={3} />
+                  </span>
+                )}
                 <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-md border border-hair bg-raised2">
                   <img
                     src={getIconPath(item) || ''}

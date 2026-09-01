@@ -1,16 +1,22 @@
-import { ChevronLeft, ChevronRight, Minus, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Layers, Minus, Plus, X } from 'lucide-react';
 import { Icon } from './Icon';
 import { LicensePlate } from './LicensePlate';
+import { SetsSection } from './SetsSection';
+import { SetBuilderBar } from './SetBuilderBar';
 import { getPrimaryCharacteristicsText } from '../utils/helpers';
 
 export function SaleList({
   items, onRemoveItem, onClearAll, onSetQty, onSetPrice,
   seller, setSeller, catalogOpen, setCatalogOpen,
   plateItems, onRemovePlate, onSetPlatePrice, onClearPlates,
+  sets, onRemoveSet, onUpdateSet, onRemoveSetComponent, onClearSets,
+  cartSelectMode, onToggleCartSelectMode, cartSelection, onToggleCartSelectItem,
+  onCreateSetFromCart, onCancelCartSelection,
 }) {
   const hasPlates = plateItems && plateItems.length > 0;
+  const hasSets = sets && sets.length > 0;
   const hasItems = items && items.length > 0;
-  const total = items.length + (plateItems?.length || 0);
+  const total = items.length + (plateItems?.length || 0) + (sets?.length || 0);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -28,17 +34,34 @@ export function SaleList({
             Добавлено{total > 0 ? ` (${total})` : ''}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={onClearAll}
-          className="rounded-md px-2 py-1 font-body text-[11px] text-danger transition-colors hover:bg-danger/10"
-        >
-          Очистить
-        </button>
+        <div className="flex items-center gap-2">
+          {hasItems && (
+            <button
+              type="button"
+              onClick={onToggleCartSelectMode}
+              title={cartSelectMode ? 'Выйти из режима сета' : 'Собрать выбранные предметы в сет'}
+              className={`flex items-center gap-1 rounded-md border px-2 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors ${
+                cartSelectMode
+                  ? 'border-signal bg-signal/20 text-signal'
+                  : 'border-hair text-mute hover:border-signal/40 hover:text-ink'
+              }`}
+            >
+              <Layers size={12} />
+              Сет
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="rounded-md px-2 py-1 font-body text-[11px] text-danger transition-colors hover:bg-danger/10"
+          >
+            Очистить
+          </button>
+        </div>
       </div>
 
       <div className="scroll-thin flex-1 overflow-y-auto p-3">
-        {!hasItems && !hasPlates ? (
+        {!hasItems && !hasPlates && !hasSets ? (
           <div className="py-10 text-center font-body text-xs leading-relaxed text-mute">
             Нажимай на предметы в каталоге
             <br />
@@ -46,11 +69,26 @@ export function SaleList({
           </div>
         ) : (
           <>
+            {cartSelectMode && hasItems && (
+              <div className="mb-2 rounded-md border border-signal/30 bg-signal/10 px-2.5 py-1.5 font-body text-[11px] text-signal">
+                Отметь предметы галочкой и собери их в сет.
+              </div>
+            )}
+
             {items.map((s, idx) => (
               <div
                 key={s.key}
                 className="mb-2 flex items-center gap-2.5 rounded-md border border-hair bg-panel p-2.5 transition-colors hover:border-signal/30"
               >
+                {cartSelectMode && (
+                  <input
+                    type="checkbox"
+                    checked={cartSelection.has(s.key)}
+                    onChange={() => onToggleCartSelectItem(s.key)}
+                    className="h-4 w-4 shrink-0 accent-signal"
+                  />
+                )}
+
                 <Icon item={s.item} />
 
                 <div className="min-w-0 flex-1">
@@ -100,6 +138,14 @@ export function SaleList({
                 </button>
               </div>
             ))}
+
+            <SetsSection
+              sets={sets}
+              onRemoveSet={onRemoveSet}
+              onUpdateSet={onUpdateSet}
+              onRemoveSetComponent={onRemoveSetComponent}
+              onClearSets={onClearSets}
+            />
 
             {hasPlates && (
               <>
@@ -155,6 +201,14 @@ export function SaleList({
           </>
         )}
       </div>
+
+      {cartSelectMode && cartSelection.size > 0 && (
+        <SetBuilderBar
+          count={cartSelection.size}
+          onCreate={onCreateSetFromCart}
+          onCancel={onCancelCartSelection}
+        />
+      )}
 
       <div className="shrink-0 border-t border-hair p-3">
         <input

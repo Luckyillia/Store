@@ -1,7 +1,7 @@
 import { formatDateRu, getItemCategory, parsePrice, formatNumber } from '../utils/helpers';
 import { FILTER_CONFIG } from '../constants';
 
-export function SummaryCard({ saleItems, plateItems = [], seller }) {
+export function SummaryCard({ saleItems, plateItems = [], sets = [], seller }) {
   const cats = {};
   let totalSum = 0;
 
@@ -24,6 +24,15 @@ export function SummaryCard({ saleItems, plateItems = [], seller }) {
     totalSum += price;
   });
 
+  sets.forEach((s) => {
+    if (!cats.sets) cats.sets = { count: 0, qty: 0, sum: 0 };
+    cats.sets.count += 1;
+    cats.sets.qty += s.qty;
+    const price = parsePrice(s.price);
+    cats.sets.sum += price * s.qty;
+    totalSum += price * s.qty;
+  });
+
   const rows = Object.entries(cats).sort((a, b) => b[1].count - a[1].count);
 
   return (
@@ -38,7 +47,7 @@ export function SummaryCard({ saleItems, plateItems = [], seller }) {
       </div>
 
       <div className="mb-4 text-center font-mono text-[11px] tracking-wide text-mute">
-        {saleItems.length + plateItems.length} позиций всего · MTA Province
+        {saleItems.length + plateItems.length + sets.length} позиций всего · MTA Province
       </div>
 
       <div className="mb-4 h-px bg-hair" />
@@ -46,7 +55,11 @@ export function SummaryCard({ saleItems, plateItems = [], seller }) {
       <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
         {rows.map(([cat, data]) => {
           const label =
-            cat === 'plates' ? 'Номера' : FILTER_CONFIG.find((f) => f.key === cat)?.label || cat;
+            cat === 'plates'
+              ? 'Номера'
+              : cat === 'sets'
+              ? 'Сеты'
+              : FILTER_CONFIG.find((f) => f.key === cat)?.label || cat;
           return (
             <div key={cat} className="flex items-center justify-between border-b border-white/5 py-1.5">
               <span className="font-body text-[11px] text-mute">{label}</span>

@@ -130,3 +130,8 @@ export function sortItems(items, sortKey) {
       return arr;
   }
 }
+
+// ── Sets ──
+export function makeSetKey() {
+  return `set_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}

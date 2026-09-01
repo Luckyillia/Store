@@ -16,6 +16,7 @@ import {
   getEventKey,
   getUniqueEvents,
   sortItems,
+  makeSetKey,
   NO_EVENT_KEY,
   NO_EVENT_LABEL,
 } from './utils/helpers';
@@ -29,6 +30,8 @@ import { BoardCard } from './components/BoardCard';
 import { SummaryCard } from './components/SummaryCard';
 import { PlatesSection } from './components/PlatesSection';
 import { PlatesBoardCard, PLATES_PER_CARD } from './components/PlatesBoardCard';
+import { SetBuilderBar } from './components/SetBuilderBar';
+import { SetBoardCard } from './components/SetBoardCard';
 
 function App() {
   const [catalogQuery, setCatalogQuery] = useState('');
@@ -39,8 +42,15 @@ function App() {
   const [seller, setSeller] = useState('');
   const [saleItems, setSaleItems] = useState([]);
   const [plateItems, setPlateItems] = useState([]);
+  const [setItems, setSetItems] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const inputRef = useRef(null);
+
+  // Sets: selection state (catalog & cart)
+  const [catalogSelectMode, setCatalogSelectMode] = useState(false);
+  const [catalogSelection, setCatalogSelection] = useState(new Map());
+  const [cartSelectMode, setCartSelectMode] = useState(false);
+  const [cartSelection, setCartSelection] = useState(new Set());
 
   const [dbReady, setDbReady] = useState(false);
 
@@ -84,6 +94,20 @@ function App() {
         if (Array.isArray(parsed?.plateItems)) {
           setPlateItems(parsed.plateItems);
         }
+
+        if (Array.isArray(parsed?.setItems)) {
+          const migratedSets = parsed.setItems
+            .filter((s) => s && Array.isArray(s.components) && s.components.length > 0)
+            .map((s) => ({
+              key: typeof s.key === 'string' && s.key ? s.key : makeSetKey(),
+              name: typeof s.name === 'string' ? s.name : 'Сет',
+              price: typeof s.price === 'string' ? s.price : '',
+              qty: Math.max(1, Number(s.qty) || 1),
+              mode: s.mode === 'grouped' ? 'grouped' : 'collage',
+              components: s.components,
+            }));
+          setSetItems(migratedSets);
+        }
       }
     } catch (e) {
       console.error('LocalStorage load failed', e);
@@ -104,8 +128,9 @@ function App() {
       sortOption,
       saleItems,
       plateItems,
+      setItems,
     });
-  }, [seller, catalogQuery, hiddenTypes, eventFilter, sortOption, saleItems, plateItems, isLoaded]);
+  }, [seller, catalogQuery, hiddenTypes, eventFilter, sortOption, saleItems, plateItems, setItems, isLoaded]);
 
   // Database readiness check
   useEffect(() => {
@@ -237,6 +262,121 @@ function App() {
     }
   }
 
+  // ── Sets ──
+  function addSet({ name, price, components }) {
+    if (!components || components.length === 0) return;
+    setSetItems((prev) => [
+      ...prev,
+      {
+        key: makeSetKey(),
+        name: name || `Сет #${prev.length + 1}`,
+        price: price || '',
+        qty: 1,
+        mode: 'collage',
+        components,
+      },
+    ]);
+  }
+
+  function removeSet(key) {
+    setSetItems((prev) => prev.filter((s) => s.key !== key));
+  }
+
+  function updateSet(key, patch) {
+    setSetItems((prev) =>
+      prev.map((s) => {
+        if (s.key !== key) return s;
+        const next = { ...s, ...patch };
+        if (patch.qty !== undefined) next.qty = Math.max(1, Number(patch.qty) || 1);
+        return next;
+      })
+    );
+  }
+
+  function removeSetComponent(setKey, componentKey) {
+    setSetItems((prev) =>
+      prev
+        .map((s) =>
+          s.key === setKey
+            ? { ...s, components: s.components.filter((c) => c.key !== componentKey) }
+            : s
+        )
+        .filter((s) => s.components.length > 0)
+    );
+  }
+
+  function clearSets() {
+    if (window.confirm('Удалить все сеты?')) {
+      setSetItems([]);
+    }
+  }
+
+  // Catalog multi-select -> set
+  function toggleCatalogSelectMode() {
+    setCatalogSelectMode((v) => {
+      const next = !v;
+      if (!next) setCatalogSelection(new Map());
+      return next;
+    });
+  }
+
+  function toggleCatalogSelectItem(item) {
+    const key = getItemKey(item);
+    setCatalogSelection((prev) => {
+      const next = new Map(prev);
+      if (next.has(key)) next.delete(key);
+      else next.set(key, item);
+      return next;
+    });
+  }
+
+  function cancelCatalogSelection() {
+    setCatalogSelection(new Map());
+  }
+
+  function createSetFromCatalog({ name, price }) {
+    const components = Array.from(catalogSelection.values()).map((item) => ({
+      key: getItemKey(item),
+      item,
+      qty: 1,
+    }));
+    addSet({ name, price, components });
+    setCatalogSelection(new Map());
+    setCatalogSelectMode(false);
+  }
+
+  // Cart multi-select -> set
+  function toggleCartSelectMode() {
+    setCartSelectMode((v) => {
+      const next = !v;
+      if (!next) setCartSelection(new Set());
+      return next;
+    });
+  }
+
+  function toggleCartSelectItem(key) {
+    setCartSelection((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  function cancelCartSelection() {
+    setCartSelection(new Set());
+  }
+
+  function createSetFromCart({ name, price }) {
+    const chosen = saleItems.filter((s) => cartSelection.has(s.key));
+    if (!chosen.length) return;
+    const components = chosen.map((s) => ({ key: s.key, item: s.item, qty: s.qty }));
+    addSet({ name, price, components });
+    setSaleItems((prev) => prev.filter((s) => !cartSelection.has(s.key)));
+    setCartSelection(new Set());
+    setCartSelectMode(false);
+  }
+
   function getCategoryOrder(item) {
     const type = String(item?.item?.type || '');
     const idx = CATEGORY_ORDER.indexOf(type);
@@ -279,8 +419,8 @@ function App() {
     return cards;
   }, [plateItems]);
 
-  const totalCards = itemCards.length + skinCards.length + plateCards.length;
-  const totalAdded = saleItems.length + plateItems.length;
+  const totalCards = itemCards.length + skinCards.length + plateCards.length + setItems.length;
+  const totalAdded = saleItems.length + plateItems.length + setItems.length;
 
   return (
     <div className="flex h-screen flex-col bg-base text-ink">
@@ -295,22 +435,35 @@ function App() {
         >
           <div className="flex h-full min-h-0 w-[400px] flex-col">
             <PlatesSection onAddPlate={addPlate} />
-            <div className="min-h-0 flex-1">
-              <Catalog
-                items={catalogItems}
-                onAddItem={addItem}
-                typeOptions={FILTER_CONFIG}
-                visibleTypes={visibleTypes}
-                onVisibleTypesChange={handleVisibleTypesChange}
-                eventOptions={eventOptions}
-                eventFilter={eventFilter}
-                setEventFilter={setEventFilter}
-                sortOption={sortOption}
-                setSortOption={setSortOption}
-                catalogQuery={catalogQuery}
-                setCatalogQuery={setCatalogQuery}
-                inputRef={inputRef}
-              />
+            <div className="flex min-h-0 flex-1 flex-col">
+              <div className="min-h-0 flex-1">
+                <Catalog
+                  items={catalogItems}
+                  onAddItem={addItem}
+                  typeOptions={FILTER_CONFIG}
+                  visibleTypes={visibleTypes}
+                  onVisibleTypesChange={handleVisibleTypesChange}
+                  eventOptions={eventOptions}
+                  eventFilter={eventFilter}
+                  setEventFilter={setEventFilter}
+                  sortOption={sortOption}
+                  setSortOption={setSortOption}
+                  catalogQuery={catalogQuery}
+                  setCatalogQuery={setCatalogQuery}
+                  inputRef={inputRef}
+                  selectMode={catalogSelectMode}
+                  onToggleSelectMode={toggleCatalogSelectMode}
+                  selectedKeys={new Set(catalogSelection.keys())}
+                  onToggleSelectItem={toggleCatalogSelectItem}
+                />
+              </div>
+              {catalogSelectMode && catalogSelection.size > 0 && (
+                <SetBuilderBar
+                  count={catalogSelection.size}
+                  onCreate={createSetFromCatalog}
+                  onCancel={cancelCatalogSelection}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -331,6 +484,17 @@ function App() {
             onRemovePlate={removePlate}
             onSetPlatePrice={setPlatePrice}
             onClearPlates={clearPlates}
+            sets={setItems}
+            onRemoveSet={removeSet}
+            onUpdateSet={updateSet}
+            onRemoveSetComponent={removeSetComponent}
+            onClearSets={clearSets}
+            cartSelectMode={cartSelectMode}
+            onToggleCartSelectMode={toggleCartSelectMode}
+            cartSelection={cartSelection}
+            onToggleCartSelectItem={toggleCartSelectItem}
+            onCreateSetFromCart={createSetFromCart}
+            onCancelCartSelection={cancelCartSelection}
           />
         </div>
 
@@ -349,7 +513,7 @@ function App() {
           </div>
 
           <div className="scroll-thin flex flex-1 flex-col items-center gap-6 overflow-y-auto p-6">
-            {!saleItems.length && !plateItems.length ? (
+            {!saleItems.length && !plateItems.length && !setItems.length ? (
               <div className="flex flex-1 items-center justify-center px-10 py-20 text-center font-body text-sm text-mute">
                 Добавь предметы — здесь появится карточка для скрина
               </div>
@@ -386,7 +550,21 @@ function App() {
                   />
                 ))}
 
-                <SummaryCard saleItems={saleItems} plateItems={plateItems} seller={seller} />
+                {setItems.length > 0 && (
+                  <div className="flex w-full max-w-[1160px] flex-wrap items-start justify-center gap-6">
+                    {setItems.map((s, idx) => (
+                      <SetBoardCard
+                        key={`set-card-${s.key}`}
+                        set={s}
+                        cardNumber={itemCards.length + skinCards.length + plateCards.length + idx + 1}
+                        totalCards={totalCards}
+                        seller={seller}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <SummaryCard saleItems={saleItems} plateItems={plateItems} sets={setItems} seller={seller} />
               </>
             )}
           </div>
