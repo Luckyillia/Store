@@ -36,7 +36,7 @@ export function SetBoardCard({ set, cardNumber, totalCards, seller }) {
 
       <div className="mb-4 h-px bg-hair" />
 
-      <div className="flex flex-nowrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {components.map((c) => (
           <div
             key={c.key}
