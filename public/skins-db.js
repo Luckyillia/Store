@@ -374,7 +374,7 @@ const skinsDatabase = [
     },
     {
         id: 126,
-        name: "Суворый тип",
+        name: "Суровый тип",
         type: "Скин",
         price: 280000,
         icon: "/icons/skins/126.png"
@@ -500,7 +500,7 @@ const skinsDatabase = [
     },
     {
         id: 19,
-        name: "Настоящий репер",
+        name: "Начинающий рэпер",
         type: "Скин",
         price: 100000,
         icon: "/icons/skins/19.png"
